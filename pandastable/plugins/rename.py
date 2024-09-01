@@ -21,6 +21,7 @@
 
 from __future__ import absolute_import, division, print_function
 import sys, os, string
+
 try:
     from tkinter import *
     from tkinter.ttk import *
@@ -29,7 +30,7 @@ except:
     from Tkinter import *
     from ttk import *
 
-if (sys.version_info > (3, 0)):
+if sys.version_info > (3, 0):
     from tkinter import filedialog, messagebox, simpledialog
 else:
     import tkFileDialog as filedialog
@@ -38,6 +39,7 @@ else:
     from ScrolledText import ScrolledText
 import re, glob
 from pandastable.plugin import Plugin
+
 
 class BatchRenamePlugin(Plugin):
     """Batch renaming plugin for DataExplore"""
@@ -52,19 +54,21 @@ class BatchRenamePlugin(Plugin):
         return
 
     def main(self, parent):
-        self.parent=parent
+        self.parent = parent
         if not self.parent:
             Frame.__init__(self)
-            self.main=self.master
+            self.main = self.master
         else:
-            self.main=Toplevel()
-            self.master=self.main
+            self.main = Toplevel()
+            self.master = self.main
         self.main.title('Batch Rename')
         ws = self.main.winfo_screenwidth()
         hs = self.main.winfo_screenheight()
-        w = 800; h=500
-        x = (ws/2)-(w/2); y = (hs/2)-(h/2)
-        self.main.geometry('%dx%d+%d+%d' % (w,h,x,y))
+        w = 800;
+        h = 500
+        x = (ws / 2) - (w / 2);
+        y = (hs / 2) - (h / 2)
+        self.main.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.doGUI()
         self.currentdir = os.path.expanduser('~')
         return
@@ -73,57 +77,57 @@ class BatchRenamePlugin(Plugin):
         """Create GUI"""
 
         self.m = PanedWindow(self.main,
-                           orient=HORIZONTAL)
-        self.m.pack(side=LEFT,fill=BOTH,expand=1)
+                             orient=HORIZONTAL)
+        self.m.pack(side=LEFT, fill=BOTH, expand=1)
 
         self.fileslist = ScrolledText(self.m, width=50, height=20)
         self.m.add(self.fileslist)
         self.preview = ScrolledText(self.m, width=20, height=20)
         self.m.add(self.preview)
-        fr=Frame(self.main, padding=(4,4), width=90)
-        b=Button(fr,text='Add Folder',command=self.addFolder)
-        b.pack(side=TOP,fill=BOTH,pady=2)
-        b=Button(fr,text='Clear',command=self.clear)
-        b.pack(side=TOP,fill=BOTH,pady=2)
+        fr = Frame(self.main, padding=(4, 4), width=90)
+        b = Button(fr, text='Add Folder', command=self.addFolder)
+        b.pack(side=TOP, fill=BOTH, pady=2)
+        b = Button(fr, text='Clear', command=self.clear)
+        b.pack(side=TOP, fill=BOTH, pady=2)
 
         self.patternvar = StringVar()
         self.patternvar.set('*.*')
         self.filepattern = Entry(fr, textvariable=self.patternvar)
-        Label(fr,text='Wildcard:').pack(side=TOP)
-        self.filepattern.pack(side=TOP,fill=BOTH,pady=2)
+        Label(fr, text='Wildcard:').pack(side=TOP)
+        self.filepattern.pack(side=TOP, fill=BOTH, pady=2)
         self.findvar = StringVar()
         self.findvar.set(' ')
         self.findtext = Entry(fr, textvariable=self.findvar)
-        Label(fr,text='Find:').pack(side=TOP)
-        self.findtext.pack(side=TOP,fill=BOTH,pady=2)
+        Label(fr, text='Find:').pack(side=TOP)
+        self.findtext.pack(side=TOP, fill=BOTH, pady=2)
         self.replacevar = StringVar()
         self.replacevar.set('.')
         self.replacetext = Entry(fr, textvariable=self.replacevar)
-        Label(fr,text='Replace With:').pack(side=TOP)
-        self.replacetext.pack(side=TOP,fill=BOTH,pady=2)
+        Label(fr, text='Replace With:').pack(side=TOP)
+        self.replacetext.pack(side=TOP, fill=BOTH, pady=2)
         self.occurencesvar = IntVar()
         self.occurencesvar.set(0)
-        Label(fr,text='Occurences:').pack(side=TOP)
+        Label(fr, text='Occurences:').pack(side=TOP)
         self.occtext = Entry(fr, textvariable=self.occurencesvar)
-        self.occtext.pack(side=TOP,fill=BOTH,pady=2)
+        self.occtext.pack(side=TOP, fill=BOTH, pady=2)
 
-        b=Button(fr,text='Preview',command=self.dopreview)
-        b.pack(side=TOP,fill=BOTH,pady=2)
-        b=Button(fr,text='Execute',command=self.execute)
-        b.pack(side=TOP,fill=BOTH,pady=2)
-        fr.pack(side=LEFT,fill=BOTH)
+        b = Button(fr, text='Preview', command=self.dopreview)
+        b.pack(side=TOP, fill=BOTH, pady=2)
+        b = Button(fr, text='Execute', command=self.execute)
+        b.pack(side=TOP, fill=BOTH, pady=2)
+        fr.pack(side=LEFT, fill=BOTH)
         return
 
-    def addFolder(self,path=None):
+    def addFolder(self, path=None):
         """Get a folder"""
 
         if path is None:
             path = filedialog.askdirectory(parent=self.main,
-                                            initialdir=self.currentdir,
-                                            title='Select folder')
+                                           initialdir=self.currentdir,
+                                           title='Select folder')
         if path:
             self.path = path
-            #self.refresh()
+            # self.refresh()
             self.dopreview()
             self.currentdir = path
         return
@@ -131,9 +135,9 @@ class BatchRenamePlugin(Plugin):
     def refresh(self):
         """Load files list"""
 
-        self.fileslist.delete('1.0',END)
+        self.fileslist.delete('1.0', END)
         fp = self.patternvar.get()
-        flist = glob.glob(os.path.join(self.path,fp))
+        flist = glob.glob(os.path.join(self.path, fp))
         filestr = '\n'.join(flist)
         self.fileslist.insert(END, filestr)
         return
@@ -142,8 +146,8 @@ class BatchRenamePlugin(Plugin):
         """Preview update"""
 
         self.refresh()
-        self.preview.delete('1.0',END)
-        flist = self.fileslist.get('1.0',END)
+        self.preview.delete('1.0', END)
+        flist = self.fileslist.get('1.0', END)
         flist = flist.split('\n')
         find = self.findvar.get()
         repl = self.replacevar.get()
@@ -151,13 +155,13 @@ class BatchRenamePlugin(Plugin):
         if occ == 0: occ = None
         new = doFindReplace(files=flist, find=find, replace=repl, occ=occ)
         new = '\n'.join(new)
-        self.preview.insert(END,new)
+        self.preview.insert(END, new)
         return
 
     def clear(self):
 
-        self.fileslist.delete('1.0',END)
-        self.preview.delete('1.0',END)
+        self.fileslist.delete('1.0', END)
+        self.preview.delete('1.0', END)
         self.path = None
         return
 
@@ -165,11 +169,11 @@ class BatchRenamePlugin(Plugin):
         """Do rename"""
 
         n = messagebox.askyesno("Rename",
-                                  "Rename the files?",
-                                  parent=self.master)
+                                "Rename the files?",
+                                parent=self.master)
         if not n:
             return
-        flist = self.fileslist.get('1.0',END).split('\n')
+        flist = self.fileslist.get('1.0', END).split('\n')
         find = self.findvar.get()
         repl = self.replacevar.get()
         occ = self.occurencesvar.get()
@@ -178,6 +182,7 @@ class BatchRenamePlugin(Plugin):
         self.refresh()
         return
 
+
 def doFindReplace(files=None, wildcard=None, find='', replace='', rename=False, occ=None):
     """Find replace method"""
 
@@ -185,34 +190,37 @@ def doFindReplace(files=None, wildcard=None, find='', replace='', rename=False, 
     if files is None:
         files = glob.glob(wildcard)
     for pathname in files:
-        basename= os.path.basename(pathname)
+        basename = os.path.basename(pathname)
         if occ is not None:
-            new_filename = basename.replace(find,replace,occ)
+            new_filename = basename.replace(find, replace, occ)
         else:
-            new_filename = basename.replace(find,replace)
+            new_filename = basename.replace(find, replace)
         newfiles.append(new_filename)
         if new_filename != basename:
 
             if rename:
                 os.rename(pathname,
                           os.path.join(os.path.dirname(pathname),
-                          new_filename))
+                                       new_filename))
     return newfiles
+
 
 def constructRegex(inputstr):
     return
+
 
 def main():
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-d", "--dir", dest="directory",
-                        help="Folder of raw files")
+                      help="Folder of raw files")
 
     opts, remainder = parser.parse_args()
     app = BatchRenameApp()
     if opts.directory is not None:
         app.addFolder(opts.directory)
     app.mainloop()
+
 
 if __name__ == '__main__':
     main()

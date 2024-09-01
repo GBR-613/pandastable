@@ -20,18 +20,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-import types
 import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+from matplotlib.collections import PathCollection
 # import matplotlib.animation as animation
-from collections import OrderedDict
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
-from matplotlib.text import Text, Annotation
-from matplotlib.collections import PathCollection
-from matplotlib.backend_bases import key_press_handler
+from matplotlib.text import Annotation
 
 
 class DragHandler(object):

@@ -52,7 +52,7 @@ class DiffExpressionPlugin(Plugin):
 
     def main(self, parent):
 
-        if parent == None:
+        if parent is None:
             return
         self.parent = parent
         self._doFrame()
@@ -187,7 +187,7 @@ class DiffExpressionPlugin(Plugin):
         cutoff = float(self.tkvars['logfc_cutoff'].get())
         res = self.result
         key = 'adj.P.Val'
-        if not key in res.columns:
+        if key not in res.columns:
             key = 'PValue'
         res = res[(res.logFC > cutoff) | (res.logFC < -cutoff)]
         res = res[res[key] <= 0.05]
@@ -252,7 +252,7 @@ def get_column_names(df):
     return cols, ncols
 
 
-def get_columns_by_label(labels, samplecol, filters=[], querystr=None):
+def get_columns_by_label(labels, samplecol, filters=None, querystr=None):
     """Get sample columns according to a condition from a set of labels
     Args:
         labels: dataframe matching sample labels to conditions/factors
@@ -262,6 +262,8 @@ def get_columns_by_label(labels, samplecol, filters=[], querystr=None):
         (see pandas.DataFrame.query documentation)
     """
 
+    if filters is None:
+        filters = []
     if querystr is None:
         q = []
         for f in filters:
@@ -278,7 +280,7 @@ def get_columns_by_label(labels, samplecol, filters=[], querystr=None):
     return list(cols)
 
 
-def get_factor_samples(df, labels, factors, filters=[],
+def get_factor_samples(df, labels, factors, filters=None,
                        samplecol='filename', index=None):
     """Get subsets of samples according to factor/levels specified in another mapping file
        Used for doing differential expr with edgeR.
@@ -291,6 +293,8 @@ def get_factor_samples(df, labels, factors, filters=[],
             dataframe of data columns with header labels for edgeR script
     """
 
+    if filters is None:
+        filters = []
     if index is not None:
         df = df.set_index(index)
     l = 0
@@ -319,7 +323,7 @@ def get_factor_samples(df, labels, factors, filters=[],
 
 
 def melt_samples(df, labels, names, samplecol='filename', index='name'):
-    """Melt sample data by factor labels so we can plot with seaborn"""
+    """Melt sample data by factor labels, so we can plot with seaborn"""
 
     df = df.set_index(index)
     scols, ncols = get_column_names(df)
@@ -377,7 +381,7 @@ def md_plot(data, de, title=''):
     data['mean log expr'] = data.mean(1).apply(np.log)
     df = data.merge(de, on='name')
     key = 'adj.P.Val'
-    if not key in df.columns:
+    if key not in df.columns:
         key = 'PValue'
     a = df[df[key] <= 0.05]
     b = df[-df.name.isin(a.name)]

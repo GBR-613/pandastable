@@ -21,10 +21,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from types import *
-import operator
-import os, string, types, copy
-import pickle
+import os
+import string
 import numpy as np
 import pandas as pd
 from . import util
@@ -50,7 +48,7 @@ class TableModel(object):
     def setup(self, dataframe, rows=20, columns=5):
         """Create table model"""
 
-        if not dataframe is None:
+        if dataframe is not None:
             self.df = dataframe
         else:
             colnames = list(string.ascii_lowercase[:columns])
@@ -71,8 +69,8 @@ class TableModel(object):
         import random
         s = string.ascii_lowercase
 
-        def genstr(n=2):
-            return ''.join(random.choice(s) for i in range(n))
+        def genstr(n_=n):
+            return ''.join(random.choice(s) for _ in range(n_))
 
         maxrows = 5e6
         if rows > maxrows:
@@ -82,7 +80,7 @@ class TableModel(object):
         n = 2
         if cols > 100:
             n = 3
-        colnames = [genstr(n) for i in range(cols)]
+        colnames = [genstr(n) for _ in range(cols)]
         coldata = [np.random.normal(x, 1, rows) for x in np.random.normal(5, 3, cols)]
         n = np.array(coldata).T
         df = pd.DataFrame(n, columns=colnames)
@@ -111,7 +109,7 @@ class TableModel(object):
     def getStackedData(self):
         """Get a dataframe to pivot test"""
 
-        import pandas.util.testing as tm;
+        import pandas.util.testing as tm
         tm.N = 4
         frame = tm.makeTimeDataFrame()
         N, K = frame.shape

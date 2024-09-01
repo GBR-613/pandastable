@@ -131,7 +131,7 @@ class Table(Canvas):
 
         self.rows = self.model.getRowCount()
         self.cols = self.model.getColumnCount()
-        self.tablewidth = (self.cellwidth) * self.cols
+        self.tablewidth = self.cellwidth * self.cols
         self.doBindings()
         self.parentframe.bind("<Destroy>", self.close)
 
@@ -193,8 +193,7 @@ class Table(Canvas):
         self.columnwidths = {}
         self.columncolors = {}
         # store general per column formatting as sub dicts
-        self.columnformats = {}
-        self.columnformats['alignment'] = {}
+        self.columnformats = {'alignment': {}}
         self.rowcolors = pd.DataFrame()
         self.highlighted = None
         # self.bg = Style().lookup('TLabel.label', 'background')
@@ -441,7 +440,7 @@ class Table(Canvas):
                 self.visiblerows = []
                 self.rowheader.redraw()
             return
-        self.tablewidth = (self.cellwidth) * self.cols
+        self.tablewidth = self.cellwidth * self.cols
         self.configure(bg=self.cellbackgr)
         self.setColPositions()
 
@@ -664,7 +663,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='color by value',
                               initialvalues=[cmaps, 1.0],
                               labels=['colormap:', 'alpha:'],
-                              types=['combobox', 'string'],
+                              types_=['combobox', 'string'],
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -707,7 +706,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='set alignment',
                               initialvalues=[vals],
                               labels=['Align:'],
-                              types=['combobox'],
+                              types_=['combobox'],
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -926,7 +925,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Flatten index',
                               initialvalues=[list(range(levels))],
                               labels=['Level:'],
-                              types=['combobox'],
+                              types_=['combobox'],
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -1049,7 +1048,7 @@ class Table(Canvas):
             d = MultipleValDialog(title='New Column',
                                   initialvalues=(coltypes, ''),
                                   labels=('Column Type', 'Name'),
-                                  types=('combobox', 'string'),
+                                  types_=('combobox', 'string'),
                                   parent=self.parentframe)
             if d.result is None:
                 return
@@ -1240,7 +1239,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='New Column',
                               initialvalues=(0, 1, False, dists, 1.0, 1.0),
                               labels=('Low', 'High', 'Random Noise', 'Distribution', 'Mean', 'Std'),
-                              types=('string', 'string', 'checkbutton', 'combobox', 'float', 'float'),
+                              types_=('string', 'string', 'checkbutton', 'combobox', 'float', 'float'),
                               tooltips=('start value if filling with data',
                                         'end value if filling with data',
                                         'create random noise data in the ranges',
@@ -1309,7 +1308,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='current type is %s' % curr,
                               initialvalues=[coltypes],
                               labels=['Type:'],
-                              types=['combobox'],
+                              types_=['combobox'],
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -1330,7 +1329,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Find duplicates',
                               initialvalues=[False, False, keep],
                               labels=['Remove duplicates:', 'Use selected columns:', 'Keep:'],
-                              types=['checkbutton', 'checkbutton', 'combobox'],
+                              types_=['checkbutton', 'checkbutton', 'combobox'],
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -1366,7 +1365,7 @@ class Table(Canvas):
                                       'Drop duplicate rows:',
                                       'Drop duplicate columns:',
                                       'Round numbers:'),
-                              types=('combobox', 'string', 'string', 'checkbutton',
+                              types_=('combobox', 'string', 'string', 'checkbutton',
                                      'checkbutton', 'combobox', 'combobox', 'checkbutton', 'checkbutton', 'string'),
                               parent=self.parentframe)
         if d.result is None:
@@ -1429,7 +1428,7 @@ class Table(Canvas):
                               labels=('Convert to integer codes:', 'Name:',
                                       'Get dummies:', 'Dummies prefix:',
                                       'Numerical bins:', 'Labels:'),
-                              types=('checkbutton', 'string', 'checkbutton',
+                              types_=('checkbutton', 'string', 'checkbutton',
                                      'string', 'string', 'string'),
                               tooltips=(None, 'name if new column',
                                         'get dummy columns for fitting', None,
@@ -1505,7 +1504,7 @@ class Table(Canvas):
                                       'New column name:',
                                       'In place:',
                                       'New column suffix:'),
-                              types=('combobox', 'string', 'checkbutton', 'string'),
+                              types_=('combobox', 'string', 'checkbutton', 'string'),
                               tooltips=(None,
                                         'New column name',
                                         'Update in place',
@@ -1546,6 +1545,7 @@ class Table(Canvas):
         df = self.model.df
         cols = list(df.columns[self.multiplecollist])
         col = cols[0]
+        new = None
 
         funcs = ['rolling window', 'expanding', 'shift']
         winfuncs = ['mean', 'sum', 'median', 'min', 'max', 'std']
@@ -1555,7 +1555,7 @@ class Table(Canvas):
                               initialvalues=(funcs, winfuncs, wintypes, 2, '_1', False),
                               labels=('Operation:', 'Window function:', 'Window type:',
                                       'Window size:', 'New column suffix:', 'In place:'),
-                              types=('combobox', 'combobox', 'combobox', 'integer', 'string', 'checkbutton'),
+                              types_=('combobox', 'combobox', 'combobox', 'integer', 'string', 'checkbutton'),
                               tooltips=(None, 'Summary function for windowing', 'Window type',
                                         'Window size', 'Suffix for new column', 'Replace column'),
                               parent=self.parentframe)
@@ -1608,7 +1608,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Resample',
                               initialvalues=(freqs, 1, funcs, conv),
                               labels=('Frequency:', 'Periods', 'Function'),
-                              types=('combobox', 'string', 'combobox'),
+                              types_=('combobox', 'string', 'combobox'),
                               tooltips=('Unit of time e.g. M for months',
                                         'How often to group e.g. every 2 months',
                                         'Function to apply'),
@@ -1657,7 +1657,7 @@ class Table(Canvas):
                                       'Pattern:',
                                       'Replace with:',
                                       'In place:'),
-                              types=('combobox', 'string', 'int',
+                              types_=('combobox', 'string', 'int',
                                      'int', 'string', 'string', 'checkbutton'),
                               tooltips=(None, 'separator for split or concat',
                                         'start index for slice',
@@ -1737,7 +1737,7 @@ class Table(Canvas):
                               initialvalues=['', timeformats, props, False, False],
                               labels=['Column name:', 'Conversion format:',
                                       'Extract from datetime:', 'In place:', 'Force:'],
-                              types=['string', 'combobox', 'combobox', 'checkbutton', 'checkbutton'],
+                              types_=['string', 'combobox', 'combobox', 'checkbutton', 'checkbutton'],
                               width=22,
                               parent=self.parentframe)
 
@@ -2570,7 +2570,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Apply Function',
                               initialvalues=(funcs, 1, False),
                               labels=('Function:', 'Constant:', 'Use Selected'),
-                              types=('combobox', 'string', 'checkbutton'),
+                              types_=('combobox', 'string', 'checkbutton'),
                               tooltips=(None, 'value to apply with arithmetic operations',
                                         'apply to selected data only'),
                               parent=self.parentframe)
@@ -2617,7 +2617,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Melt',
                               initialvalues=(cols, valcols, 'var'),
                               labels=('ID vars:', 'Value vars:', 'var name:'),
-                              types=('combobox', 'listbox', 'entry'),
+                              types_=('combobox', 'listbox', 'entry'),
                               tooltips=('Column(s) to use as identifier variables',
                                         'Column(s) to unpivot',
                                         'name of variable column'),
@@ -2655,7 +2655,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Pivot',
                               initialvalues=(cols, cols, valcols, funcs),
                               labels=('Index:', 'Columns:', 'Values:', 'Agg Function:'),
-                              types=('combobox', 'listbox', 'listbox', 'combobox'),
+                              types_=('combobox', 'listbox', 'listbox', 'combobox'),
                               tooltips=('a unique index to reshape on', 'column with variables',
                                         'selecting no values uses all remaining cols',
                                         'function to aggregate on'),
@@ -2723,7 +2723,7 @@ class Table(Canvas):
                               labels=['replace', 'with:',
                                       'add symbol to start:',
                                       'make lowercase', 'make uppercase'],
-                              types=('string', 'string', 'string', 'checkbutton', 'checkbutton'),
+                              types_=('string', 'string', 'string', 'checkbutton', 'checkbutton'),
                               parent=self.parentframe)
         if d.result is None:
             return
@@ -2757,7 +2757,7 @@ class Table(Canvas):
                                       'try to remove text',
                                       'selected columns only:',
                                       'fill empty:'],
-                              types=('combobox', 'checkbutton', 'checkbutton',
+                              types_=('combobox', 'checkbutton', 'checkbutton',
                                      'checkbutton', 'checkbutton'),
                               parent=self.parentframe)
         if d.result is None:
@@ -2899,7 +2899,7 @@ class Table(Canvas):
                               initialvalues=(['left', 'right'], 1, 1, 0, '', 0, 0),
                               labels=['justify:', 'header ', 'include index:',
                                       'sparsify:', 'na_rep:', 'max_cols', 'use selected'],
-                              types=('combobox', 'checkbutton', 'checkbutton',
+                              types_=('combobox', 'checkbutton', 'checkbutton',
                                      'checkbutton', 'string', 'int', 'checkbutton'),
                               parent=self.parentframe)
         if d.result is None:
@@ -2984,8 +2984,8 @@ class Table(Canvas):
         def createSubMenu(parent, label, commands):
             menu = Menu(parent, tearoff=0)
             popupmenu.add_cascade(label=label, menu=menu)
-            for action in commands:
-                menu.add_command(label=action, command=defaultactions[action])
+            for cmd in commands:
+                menu.add_command(label=cmd, command=defaultactions[cmd])
             applyStyle(menu)
             return menu
 
@@ -3147,9 +3147,9 @@ class Table(Canvas):
 
         df = self.model.df
         if len(self.multiplerowlist) > 0:
-            data = df.iloc[self.multiplerowlist,]
+            data = df.iloc[self.multiplerowlist, ]
         else:
-            data = df.iloc[[self.currentrow],]
+            data = df.iloc[[self.currentrow], ]
         return data
 
     def getPlotData(self):
@@ -3579,7 +3579,7 @@ class Table(Canvas):
         mpDlg = MultipleValDialog(title='Create new table',
                                   initialvalues=(50, 10),
                                   labels=('rows', 'columns'),
-                                  types=('int', 'int'),
+                                  types_=('int', 'int'),
                                   parent=self.parentframe)
         if mpDlg.result:
             rows = mpDlg.results[0]
@@ -3697,7 +3697,7 @@ class Table(Canvas):
         d = MultipleValDialog(title='Import Sheet',
                               initialvalues=([names]),
                               labels=(['Sheet']),
-                              types=(['combobox']),
+                              types_=(['combobox']),
                               parent=self.parentframe)
         if not d.result:
             return
@@ -3823,12 +3823,12 @@ class statusBar(Frame):
         sfont = ("Helvetica bold", 10)
         clr = '#A10000'
         self.rowsvar = StringVar()
-        self.rowsvar.set(len(df))
+        self.rowsvar.set(str(len(df)))
         l = Label(self, textvariable=self.rowsvar, font=sfont, foreground=clr)
         l.pack(fill=X, side=LEFT)
         Label(self, text='rows x', font=sfont, foreground=clr).pack(side=LEFT)
         self.colsvar = StringVar()
-        self.colsvar.set(len(df.columns))
+        self.colsvar.set(str(len(df.columns)))
         l = Label(self, textvariable=self.colsvar, font=sfont, foreground=clr)
         l.pack(fill=X, side=LEFT)
         Label(self, text='columns', font=sfont, foreground=clr).pack(side=LEFT)

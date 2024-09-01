@@ -1092,7 +1092,7 @@ class PlotViewer(Frame):
     def heatmap(self, df, ax, kwds):
         """Plot heatmap"""
 
-        X = df._get_numeric_data()
+        X1 = df._get_numeric_data()
         clr = 'black'
         lw = kwds['linewidth']
         if lw == 0:
@@ -1106,11 +1106,11 @@ class PlotViewer(Frame):
                        linewidth=lw, alpha=kwds['alpha'], norm=norm)
         if kwds['colorbar']:
             self.fig.colorbar(hm, ax=ax)
-        ax.set_xticks(np.arange(0.5, len(X.columns)))
-        ax.set_yticks(np.arange(0.5, len(X.index)))
-        ax.set_xticklabels(X.columns, minor=False)
-        ax.set_yticklabels(X.index, minor=False)
-        ax.set_ylim(0, len(X.index))
+        ax.set_xticks(np.arange(0.5, len(X1.columns)))
+        ax.set_yticks(np.arange(0.5, len(X1.index)))
+        ax.set_xticklabels(X1.columns, minor=False)
+        ax.set_yticklabels(X1.index, minor=False)
+        ax.set_ylim(0, len(X1.index))
         ##if kwds['rot'] != 0:
         #    for tick in ax.get_xticklabels():
         #        tick.set_rotation(kwds['rot'])
@@ -1162,8 +1162,8 @@ class PlotViewer(Frame):
         yi = np.linspace(y.min(), y.max())
         # zi = griddata(x, y, z, xi, yi, interp='linear')
         zi = griddata((x, y), z, (xi[None, :], yi[:, None]), method='cubic')
-        X, Y = np.meshgrid(xi, yi)
-        return X, Y, zi
+        x_, y_ = np.meshgrid(xi, yi)
+        return x_, y_, zi
 
     def getView(self):
         ax = self.ax
@@ -1255,7 +1255,7 @@ class PlotViewer(Frame):
         cmap = plt.cm.get_cmap(kwds['colormap'])
         for c in data.columns:
             h = data[c]
-            c = cmap(float(i) / (plots))
+            c = cmap(float(i) / plots)
             ax.bar(data.index, h, zs=i, zdir='y', color=c)
             i += 1
 

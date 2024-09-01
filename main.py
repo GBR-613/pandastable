@@ -21,23 +21,23 @@
 
 from pandastable.app import DataExplore, TestApp
 
+
 def main():
     """Run the application from outside the module - used for
        deploying as frozen app"""
 
-    import sys, os
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-f", "--file", dest="msgpack",
-                        help="Open a dataframe as msgpack", metavar="FILE")
+                      help="Open a dataframe as msgpack", metavar="FILE")
     parser.add_option("-p", "--project", dest="projfile",
-                        help="Open a dataexplore project file", metavar="FILE")
+                      help="Open a dataexplore project file", metavar="FILE")
     parser.add_option("-i", "--csv", dest="csv",
-                        help="Open a csv file by trying to import it", metavar="FILE")
+                      help="Open a csv file by trying to import it", metavar="FILE")
     parser.add_option("-x", "--excel", dest="excel",
-                        help="Import an excel file", metavar="FILE")
-    parser.add_option("-t", "--test", dest="test",  action="store_true",
-                        default=False, help="Run a basic test app")
+                      help="Import an excel file", metavar="FILE")
+    parser.add_option("-t", "--test", dest="test", action="store_true",
+                      default=False, help="Run a basic test app")
 
     opts, remainder = parser.parse_args()
     if opts.test:

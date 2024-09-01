@@ -1,2 +1,6 @@
+.idea/
+.vscode/
 pandastable.egg-info/
 pandastable/__pycache__/
+examples/__pycache__/
+examples.egg-info/

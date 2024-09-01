@@ -320,11 +320,11 @@ class DataExplore(Frame):
         self.main.geometry(self.winsize)
         return
 
-    def createPulldown(self, menu, dict, var=None):
+    def createPulldown(self, menu, dict_, var=None):
         """Create pulldown menu, returns a dict.
         Args:
             menu: parent menu bar
-            dict: dictionary of the form -
+            dict_: dictionary of the form -
             {'01item name':{'cmd':function name, 'sc': shortcut key}}
             var: an already created menu
         """
@@ -332,28 +332,28 @@ class DataExplore(Frame):
         if var is None:
             var = Menu(menu, tearoff=0)
         dialogs.applyStyle(var)
-        items = list(dict.keys())
+        items = list(dict_.keys())
         items.sort()
         for item in items:
             if item[-3:] == 'sep':
                 var.add_separator()
             else:
-                command = dict[item]['cmd']
+                command = dict_[item]['cmd']
                 label = '%-25s' % (item[2:])
-                if 'img' in dict[item]:
-                    img = dict[item]['img']
+                if 'img' in dict_[item]:
+                    img = dict_[item]['img']
                 else:
                     img = None
-                if 'sc' in dict[item]:
-                    sc = dict[item]['sc']
+                if 'sc' in dict_[item]:
+                    sc = dict_[item]['sc']
                     # bind command
                     # self.main.bind(sc, command)
                 else:
                     sc = None
                 var.add('command', label=label, command=command, image=img,
                         compound="left")  # , accelerator=sc)
-        dict['var'] = var
-        return dict
+        dict_['var'] = var
+        return dict_
 
     def progressDialog(self):
 
@@ -420,16 +420,17 @@ class DataExplore(Frame):
     def saveMeta(self, table):
         """Save meta data such as current plot options"""
 
-        meta = {}
-        # save plot options
-        meta['mplopts'] = table.pf.mplopts.kwds
-        meta['mplopts3d'] = table.pf.mplopts3d.kwds
-        meta['labelopts'] = table.pf.labelopts.kwds
-        # print (table.pf.mplopts.kwds)
+        meta = {
+            # save plot options
+            'mplopts': table.pf.mplopts.kwds,
+            'mplopts3d': table.pf.mplopts3d.kwds,
+            'labelopts': table.pf.labelopts.kwds,
+            # save table selections
+            'table': util.getAttributes(table),
+            'plotviewer': util.getAttributes(table.pf)
+        }
 
-        # save table selections
-        meta['table'] = util.getAttributes(table)
-        meta['plotviewer'] = util.getAttributes(table.pf)
+        # print (table.pf.mplopts.kwds)
         # print (meta['plotviewer'])
         # save row colors since its a dataframe and isn't picked up by getattributes currently
         meta['table']['rowcolors'] = table.rowcolors
@@ -456,8 +457,7 @@ class DataExplore(Frame):
         if os.path.exists(appfile):
             self.appoptions = pickle.load(open(appfile, 'rb'))
         else:
-            self.appoptions = {}
-            self.appoptions['recent'] = []
+            self.appoptions = {'recent': []}
         return
 
     def newProject(self, data=None, df=None):
@@ -749,21 +749,21 @@ class DataExplore(Frame):
         if checkName(sheetname) == 0:
             return
         # Create the table
-        main = PanedWindow(orient=HORIZONTAL)
-        self.sheetframes[sheetname] = main
-        self.nb.add(main, text=sheetname)
-        f1 = Frame(main)
+        main_ = PanedWindow(orient=HORIZONTAL)
+        self.sheetframes[sheetname] = main_
+        self.nb.add(main_, text=sheetname)
+        f1 = Frame(main_)
         table = Table(f1, dataframe=df, showtoolbar=1, showstatusbar=1)
-        f2 = Frame(main)
+        f2 = Frame(main_)
         # show the plot frame
         pf = table.showPlotViewer(f2)
         # load meta data
         if meta is not None:
             self.loadMeta(table, meta)
         # add table last so we have save options loaded already
-        main.add(f1, weight=3)
+        main_.add(f1, weight=3)
         table.show()
-        main.add(f2, weight=4)
+        main_.add(f2, weight=4)
 
         if table.plotted == 'main':
             table.plotSelected()
@@ -873,7 +873,7 @@ class DataExplore(Frame):
         d = MultipleValDialog(title='Concat',
                               initialvalues=(vals, vals),
                               labels=('Table 1', 'Table 2'),
-                              types=('combobox', 'combobox'),
+                              types_=('combobox', 'combobox'),
                               parent=self.master)
         if d.result is None:
             return
@@ -894,7 +894,7 @@ class DataExplore(Frame):
         d = MultipleValDialog(title='Sample Data',
                               initialvalues=(100, 5),
                               labels=('Rows', 'Columns'),
-                              types=('int', 'int'),
+                              types_=('int', 'int'),
                               parent=self.master)
         if d.result is None:
             return
@@ -989,15 +989,15 @@ class DataExplore(Frame):
                                 command=func(plg))
         return
 
-    def loadPlugin(self, plugin):
+    def loadPlugin(self, plugin_):
         """Instantiate the plugin and call it's main method"""
 
-        p = plugin()
+        p = plugin_()
         # plugin should add itself to the table frame if it's a dialog
         try:
             p.main(parent=self)
         except Exception as e:
-            messagebox.showwarning("Plugin error", e,
+            messagebox.showwarning("Plugin error", str(e),
                                    parent=self)
         name = self.getCurrentSheet()
         # track which plugin is running so the last one is removed?
@@ -1032,11 +1032,11 @@ class DataExplore(Frame):
         fig = pickle.loads(p)
         self.plots[label] = fig
 
-        def func(label):
-            fig = self.plots[label]
+        def func(label_):
+            fig_ = self.plots[label_]
             win = Toplevel()
-            win.title(label)
-            plotting.addFigure(win, fig)
+            win.title(label_)
+            plotting.addFigure(win, fig_)
 
         menu = self.plots_menu['var']
         menu.add_command(label=label, command=lambda: func(label))
@@ -1092,7 +1092,7 @@ class DataExplore(Frame):
         return
 
     def _check_snap(self):
-        if os.environ.has_key('SNAP_USER_COMMON'):
+        if 'SNAP_USER_COMMON' in os.environ:
             print('running inside snap')
             return True
         return False
@@ -1203,7 +1203,7 @@ class TestApp(Frame):
 
 
 def main():
-    "Run the application"
+    """Run the application"""
     import sys, os
     from optparse import OptionParser
     parser = OptionParser()

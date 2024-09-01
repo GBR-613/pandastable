@@ -23,6 +23,7 @@ from __future__ import absolute_import, division, print_function
 import os, datetime
 from pandastable.plugin import Plugin
 from pandastable import plotting, dialogs
+
 try:
     from tkinter import *
     from tkinter.ttk import *
@@ -32,12 +33,14 @@ except:
 import pandas as pd
 import pylab as plt
 from collections import OrderedDict
-#from pandastable.dialogs import *
+
+
+# from pandastable.dialogs import *
 
 class DataReaderPlugin(Plugin):
     """Plugin for using pandas datareader for remote data access"""
 
-    #capabilities = ['gui']
+    # capabilities = ['gui']
     requires = ['']
     menuentry = 'Remote Data'
     gui_methods = {}
@@ -51,38 +54,38 @@ class DataReaderPlugin(Plugin):
         if parent is None:
             return
         self.parent = parent
-        self._doFrame(width=480,height=140)
+        self._doFrame(width=480, height=140)
         self.mainwin.title('Remote Data')
-        self.mainwin.resizable(width=False,height=False)
-        sources = ['Google Finance', 'FRED','World Bank','Eurostat','TSP','FAMA/French']
-        dformats = ['%m/%d/%Y','%d/%m/%Y']
-        grps = {'sources':['source','dataset','url'], 'time':['start','end','dateformat']}
+        self.mainwin.resizable(width=False, height=False)
+        sources = ['Google Finance', 'FRED', 'World Bank', 'Eurostat', 'TSP', 'FAMA/French']
+        dformats = ['%m/%d/%Y', '%d/%m/%Y']
+        grps = {'sources': ['source', 'dataset', 'url'], 'time': ['start', 'end', 'dateformat']}
         self.groups = grps = OrderedDict(grps)
 
         datacols = []
         self.opts = {
-                     'source': {'type':'combobox','default':'FRED','items':sources,'width':20},
-                     'dataset': {'type':'combobox','default':'F','items':['F']},
-                     'url': {'type':'entry','default':'','label':'download url','width':25},
-                     'start': {'type':'entry','default':'01/01/16','label':'start date','width':15},
-                     'end': {'type':'entry','default':'31/12/16','label':'end date'},
-                     'dateformat': {'type':'combobox','default':'%m/%d/%Y','items':dformats}
-                     }
+            'source': {'type': 'combobox', 'default': 'FRED', 'items': sources, 'width': 20},
+            'dataset': {'type': 'combobox', 'default': 'F', 'items': ['F']},
+            'url': {'type': 'entry', 'default': '', 'label': 'download url', 'width': 25},
+            'start': {'type': 'entry', 'default': '01/01/16', 'label': 'start date', 'width': 15},
+            'end': {'type': 'entry', 'default': '31/12/16', 'label': 'end date'},
+            'dateformat': {'type': 'combobox', 'default': '%m/%d/%Y', 'items': dformats}
+        }
         fr = self._createWidgets(self.mainwin)
-        fr.pack(side=LEFT,fill=BOTH)
+        fr.pack(side=LEFT, fill=BOTH)
         bf = Frame(self.mainwin, padding=2)
-        bf.pack(side=LEFT,fill=BOTH)
+        bf.pack(side=LEFT, fill=BOTH)
         b = Button(bf, text="Fetch Data", command=self.fetch)
-        b.pack(side=TOP,fill=X,pady=2)
+        b.pack(side=TOP, fill=X, pady=2)
         b = Button(bf, text="Close", command=self.quit)
-        b.pack(side=TOP,fill=X,pady=2)
+        b.pack(side=TOP, fill=X, pady=2)
         b = Button(bf, text="About", command=self._aboutWindow)
-        b.pack(side=TOP,fill=X,pady=2)
-        #self.progframe = Frame(self.mainwin)
-        #self.progframe.pack(side=TOP,fill=X)
+        b.pack(side=TOP, fill=X, pady=2)
+        # self.progframe = Frame(self.mainwin)
+        # self.progframe.pack(side=TOP,fill=X)
         self.update()
-        #self.prog_bar = Progress(bf)
-        #self.prog_bar.pb_stop()
+        # self.prog_bar = Progress(bf)
+        # self.prog_bar.pb_stop()
         return
 
     def fetch(self):
@@ -91,7 +94,7 @@ class DataReaderPlugin(Plugin):
         import pandas_datareader.data as web
         from pandas_datareader import wb
 
-        #self.prog_bar.pb_start()
+        # self.prog_bar.pb_start()
         self.applyOptions()
         source = self.kwds['source']
         dataset = self.kwds['dataset']
@@ -129,10 +132,10 @@ class DataReaderPlugin(Plugin):
         elif source == 'FAMA/French':
             ds = web.DataReader(dataset, "famafrench")
             df = ds[0]
-        label = source+'_'+dataset
-        df=df.reset_index()
+        label = source + '_' + dataset
+        df = df.reset_index()
         self.parent.load_dataframe(df, label, True)
-        #self.prog_bar.pb_stop()
+        # self.prog_bar.pb_stop()
         return
 
     def fetch_url(self, url):
@@ -144,17 +147,17 @@ class DataReaderPlugin(Plugin):
             r = urllib.request.urlopen(url)
             z = zipfile.ZipFile(io.BytesIO(r.read()))
             info = z.infolist()
-            print (info)
-            #for i in info:
+            print(info)
+            # for i in info:
             #    name = info.filename
 
         try:
             df = pd.read_csv(url)
         except Exception as e:
             messagebox.showwarning("Failed to read URL",
-                                   "%s" %e,
+                                   "%s" % e,
                                    parent=self.parent)
-            df=None
+            df = None
         return df
 
     def update(self, evt=None):
@@ -206,8 +209,8 @@ class DataReaderPlugin(Plugin):
     def about(self):
         """About this plugin"""
 
-        txt = "This plugin allows fetching of remote data from\n"+\
-              "multiple sources of public data using the pandas\n"+\
-              "datareader. See https://pandas-datareader.readthedocs.io\n"+\
-              "version: %s" %self.version
+        txt = "This plugin allows fetching of remote data from\n" + \
+              "multiple sources of public data using the pandas\n" + \
+              "datareader. See https://pandas-datareader.readthedocs.io\n" + \
+              "version: %s" % self.version
         return txt

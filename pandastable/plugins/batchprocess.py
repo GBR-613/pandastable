@@ -21,28 +21,23 @@
 
 from __future__ import absolute_import, division, print_function
 
-try:
+import os
+import sys
+import time
+
+if sys.version_info > (3, 0):
     from tkinter import *
     from tkinter.ttk import *
-    from tkinter.scrolledtext import ScrolledText
-except:
+    from tkinter import filedialog
+else:
     from Tkinter import *
     from ttk import *
-
-import os, sys, string, time
-
-if (sys.version_info > (3, 0)):
-    from tkinter import filedialog, messagebox, simpledialog
-else:
     import tkFileDialog as filedialog
-    import tkSimpleDialog as simpledialog
-    import tkMessageBox as messagebox
-    from ScrolledText import ScrolledText
-import re, glob
+
+import glob
 import pandas as pd
 from pandastable.plugin import Plugin
 from pandastable import Table, TableModel, dialogs
-import pylab as plt
 
 
 class MyTable(Table):
@@ -58,7 +53,6 @@ class MyTable(Table):
 
     def handle_right_click(self, event):
         """respond to a right click"""
-
         return
 
     def handle_left_click(self, event):
@@ -91,9 +85,9 @@ class BatchProcessPlugin(Plugin):
             self.main.title('Batch Process')
             ws = self.main.winfo_screenwidth()
             hs = self.main.winfo_screenheight()
-            w = 900;
+            w = 900
             h = 500
-            x = (ws / 2) - (w / 2);
+            x = (ws / 2) - (w / 2)
             y = (hs / 2) - (h / 2)
             self.main.geometry('%dx%d+%d+%d' % (w, h, x, y))
         else:
@@ -198,7 +192,7 @@ class BatchProcessPlugin(Plugin):
         else:
             flist = glob.glob(os.path.join(self.path, fp))
         sizes = []
-        cols = [];
+        cols = []
         rows = []
         for f in flist:
             s = os.path.getsize(f)
@@ -246,7 +240,7 @@ class BatchProcessPlugin(Plugin):
         d = dialogs.MultipleValDialog(title='Batch Import Files',
                                       initialvalues=[ops],
                                       labels=['How to Import:'],
-                                      types=['combobox'],
+                                      types_=['combobox'],
                                       parent=self.mainwin)
         if d.result is None:
             return
@@ -297,9 +291,8 @@ class BatchProcessPlugin(Plugin):
         plotdir = self.savepath
         if not os.path.exists(plotdir):
             os.mkdir(plotdir)
-        format = self.saveformatvar.get()
-        if format == 'pdf':
-            pdf_pages = self.pdfPages()
+        format_ = self.saveformatvar.get()
+        pdf_pages = self.pdfPages() if format_ == 'pdf' else None
         df = self.pt.model.df
         cols = self.getCurrentSelections()
         for i, r in df.iterrows():
@@ -311,12 +304,12 @@ class BatchProcessPlugin(Plugin):
             df = df[df.columns[cols]]
             self.pf.replot(df)
             self.pf.fig.suptitle(name)
-            if format == 'pdf':
+            if format_ == 'pdf':
                 fig = self.pf.fig
                 pdf_pages.savefig(fig)
             else:
-                self.pf.savePlot(filename=os.path.join(plotdir, name + '.' + format))
-        if format == 'pdf':
+                self.pf.savePlot(filename=os.path.join(plotdir, name + '.' + format_))
+        if format_ == 'pdf':
             pdf_pages.close()
         return
 
@@ -333,7 +326,6 @@ class BatchProcessPlugin(Plugin):
         from matplotlib.backends.backend_pdf import PdfPages
         filename = os.path.join(self.savepath, 'batch_plots.pdf')
         pdf_pages = PdfPages(filename)
-        from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
         return pdf_pages
 
     def test(self):

@@ -28,12 +28,7 @@ try:
 except:
     from Tkinter import *
     from ttk import *
-import types
-import numpy as np
-import pandas as pd
 import pylab as plt
-from collections import OrderedDict
-import operator
 from .dialogs import *
 
 try:

@@ -161,7 +161,7 @@ class SeabornPlugin(Plugin):
                                ci=ci)
             self.g = g
         except Exception as e:
-            self.showWarning(e)
+            self.showWarning(str(e))
             return
 
         # need to always make a new canvas to get size right

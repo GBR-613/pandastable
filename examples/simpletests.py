@@ -97,8 +97,8 @@ def select_test():
     pt.setColorByMask('a', mask_1, '#ff9999')
     colors = {'red':'#f34130','blue':'blue'}
     for l in df.label.unique():
-    	mask = df['label']==l
-    	pt.setColorByMask('label', mask, l) #colors[l])
+        mask = df['label'] == l
+        pt.setColorByMask('label', mask, l)  # colors[l])
     pt.redraw()
     return
 

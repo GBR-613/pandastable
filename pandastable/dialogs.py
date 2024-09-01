@@ -341,11 +341,11 @@ class MultipleValDialog(Dialog):
     """Simple dialog to get multiple values"""
 
     def __init__(self, parent, title=None, initialvalues=None, labels=None,
-                 types=None, tooltips=None, width=14, **kwargs):
-        if labels is not None and types is not None:
+                 types_=None, tooltips=None, width=14, **kwargs):
+        if labels is not None and types_ is not None:
             self.initialvalues = initialvalues
             self.labels = labels
-            self.types = types
+            self.types = types_
             self.tooltips = tooltips
             self.maxwidth = width
 
@@ -981,7 +981,8 @@ class AggregateDialog(BaseDialog):
             aggdict = (dict(zip(agg, funcs)))
         else:
             aggdict = {}
-            if len(funcs) == 1: funcs = funcs[0]
+            if len(funcs) == 1:
+                funcs = funcs[0]
             for a in agg:
                 aggdict[a] = funcs
         # print (aggdict)
